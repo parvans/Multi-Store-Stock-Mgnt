@@ -29,7 +29,12 @@ export const getStocks = async(req, res, next)=>{
 
 export const transferStock = async(req, res, next)=>{  // store -> store
     try {
-        
+        const result = await transferStoreToStoreService(req.body);
+        res.status(200).json({
+            success:true,
+            message:"Stock transfered successfully",
+            data:result
+        })
     } catch (error) {
         next(error)
     }
