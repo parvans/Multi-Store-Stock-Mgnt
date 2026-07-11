@@ -93,3 +93,21 @@ export const adjustorCreateStockService = async({
 
     return stock
 }
+
+export const getStocksService = async({threshold})=>{
+    const filter = {};
+
+    if(threshold !==undefined){
+        filter.quantity={
+            $lte:Number(threshold)
+        }
+    }
+
+    const stocks = await Stock.find(filter)
+        .populate('product','name sku')
+        .populate('store','name address')
+        .sort({quantity:1})
+
+    return stocks
+
+}

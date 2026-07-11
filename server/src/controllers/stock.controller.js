@@ -1,4 +1,4 @@
-import { adjustorCreateStockService } from "../services/stock.service.js";
+import { adjustorCreateStockService, getStocksService } from "../services/stock.service.js";
 
 export const adjustorCreateStock = async(req, res, next)=>{
     try {
@@ -14,6 +14,19 @@ export const adjustorCreateStock = async(req, res, next)=>{
     }
 }
 
+export const getStocks = async(req, res, next)=>{
+    try {
+        const stocks = await getStocksService(req.query);
+        res.status(200).json({
+            success:true,
+            count:stocks.length,
+            data:stocks
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const transferStock = async(req, res, next)=>{  // store -> store
     try {
         
@@ -22,10 +35,3 @@ export const transferStock = async(req, res, next)=>{  // store -> store
     }
 }
 
-export const getStocks = async(req, res, next)=>{
-    try {
-        
-    } catch (error) {
-        next(error)
-    }
-}
