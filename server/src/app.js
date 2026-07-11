@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 // routes
-app.use("/api/v1/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get('/health', (_, res) => res.json({ status: 'ok', timestamp: new Date() }));
 app.use((req,res)=>{

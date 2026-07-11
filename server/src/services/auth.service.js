@@ -44,20 +44,20 @@ export const loginService = async({
     email,
     password,
 })=>{
-    const userExist = await User.findOne({email}).select("+password");
+    const user = await User.findOne({email}).select("+password")
 
-    if(!userExist){
+    if(!user){
         const error = new Error('Invalid email or password');
         error.statusCode = 401;
         throw error;
     }
 
-    const verifyPassword = await bcrypt.compare(password, userExist.password)
+    const verifyPassword = await bcrypt.compare(password, user.password)
     if(!verifyPassword){
         const error = new Error('Invalid email or password');
         error.statusCode = 401;
         throw error;
-    }
+    }    
 
     return user;
 }

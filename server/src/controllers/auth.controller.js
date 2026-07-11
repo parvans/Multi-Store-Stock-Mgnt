@@ -19,12 +19,11 @@ export const signUp = async(req, res, next)=>{
         });
 
     } catch (error) {
-        console.error('Signup Error:', error);
-        res.status(500).json({ message: 'Internal server error' }); 
+        next(error);
     }
 }
 
-export const login = async(req, res)=>{
+export const login = async(req, res, next)=>{
     try {
         const user = await loginService(req.body);
         const token = generateToken(user._id, user.role);
@@ -42,7 +41,6 @@ export const login = async(req, res)=>{
         });
 
     } catch (error) {
-         console.error('Login Error:', error);
-        res.status(500).json({ message: 'Internal server error' }); 
+         next(error); 
     }
 }
