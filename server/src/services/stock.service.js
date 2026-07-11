@@ -129,8 +129,8 @@ export const transferStoreToStoreService = async({
         throw error;
     }
 
-    if(quantity ===0){
-        const error = new Error("Transfer Quantity Cannot be zero");
+    if(quantity <= 0){
+        const error = new Error("Transfer Quantity must be grater than zero");
         error.statusCode = 400;
         throw error;
     }
@@ -141,22 +141,25 @@ export const transferStoreToStoreService = async({
         throw error;
     }
 
-    const product = await Product.findById(productId);
+    const [product, sourceStore, destinStore] = await Promise.all([
+        Product.findById(productId),
+        Store.findById(sourceStoreId),
+        Store.findById(destinStoreId)
+    ])
+
     if(!product){
         const error = new Error("Product not found");
-        error.statusCode = 400;
+        error.statusCode = 404;
         throw error;
     }
-    const sourceStore = await Store.findById(sourceStoreId);
     if(!sourceStore){
         const error = new Error("Source Store not found");
-        error.statusCode = 400;
+        error.statusCode = 404;
         throw error;
     }
-    const destinStore = await Store.findById(destinStoreId);
     if(!destinStore){
         const error = new Error("Destination Store not found");
-        error.statusCode = 400;
+        error.statusCode = 404;
         throw error;
     }
 
@@ -193,6 +196,7 @@ export const transferStoreToStoreService = async({
 
         if(destinStock){
             destinStock.quantity += quantity;
+            await destinStock.save({session})
         }else{
             await Stock.create([
                 {
