@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Product from "../models/Product.js";
 import Stock from "../models/Stock.js";
 import Store from "../models/Store.js";
@@ -45,7 +46,7 @@ export const adjustorCreateStockService = async({
             throw error;
         }
 
-        stock = await Stock.create({
+        stock = await Stock.create({ // create stock if a stock with product and store id not exist
             product:productId,
             store:storeId,
             quantity
@@ -110,4 +111,111 @@ export const getStocksService = async({threshold})=>{
 
     return stocks
 
+}
+
+export const transferStoreToStoreService = async({
+    productId,
+    sourceStoreId,
+    destinStoreId,
+    quantity
+})=>{
+    if(!productId ||
+       !sourceStoreId ||
+       !destinStoreId || 
+       quantity === undefined
+    ){
+        const error = new Error("All fields required");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if(quantity ===0){
+        const error = new Error("Transfer Quantity Cannot be zero");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if(sourceStoreId === destinStoreId){
+        const error = new Error("Cannot transfer to the same store");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const product = await Product.findById(productId);
+    if(!product){
+        const error = new Error("Product not found");
+        error.statusCode = 400;
+        throw error;
+    }
+    const sourceStore = await Store.findById(sourceStoreId);
+    if(!sourceStore){
+        const error = new Error("Source Store not found");
+        error.statusCode = 400;
+        throw error;
+    }
+    const destinStore = await Store.findById(destinStoreId);
+    if(!destinStore){
+        const error = new Error("Destination Store not found");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+        // removing stocks from source store only if quantity >= requested quantity
+        const sourceStock = await Stock.findOneAndUpdate({
+            product:productId,
+            store:sourceStoreId,
+            quantity:{
+                $gte:quantity
+            }
+        },{
+            $inc:{
+                quantity:-quantity
+            }
+        },{
+            new:true,
+            session
+        })
+
+        if(!sourceStock){
+            const error = new Error("Insufficient stock");
+            error.statusCode = 400;
+            throw error;
+        }
+
+        const destinStock = await Stock.findOne({
+            product:productId,
+            store:destinStoreId
+        }).session(session)
+
+        if(destinStock){
+            destinStock.quantity += quantity;
+        }else{
+            await Stock.create([
+                {
+                    product:productId,
+                    store:destinStoreId,
+                    quantity:quantity
+                }
+            ],
+            {
+                session
+            })
+        }
+
+        await session.commitTransaction();
+
+        return{
+            source:sourceStock
+        }
+
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    }finally{
+        session.endSession();
+    }
 }
