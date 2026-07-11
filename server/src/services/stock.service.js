@@ -189,26 +189,43 @@ export const transferStoreToStoreService = async({
             throw error;
         }
 
-        const destinStock = await Stock.findOne({
+        // const destinStock = await Stock.findOne({
+        //     product:productId,
+        //     store:destinStoreId
+        // }).session(session)
+
+        // if(destinStock){
+        //     destinStock.quantity += quantity;
+        //     await destinStock.save({session})
+        // }else{
+        //     await Stock.create([
+        //         {
+        //             product:productId,
+        //             store:destinStoreId,
+        //             quantity:quantity
+        //         }
+        //     ],
+        //     {
+        //         session
+        //     })
+        // }
+
+        await Stock.findOneAndUpdate({
             product:productId,
             store:destinStoreId
-        }).session(session)
-
-        if(destinStock){
-            destinStock.quantity += quantity;
-            await destinStock.save({session})
-        }else{
-            await Stock.create([
-                {
-                    product:productId,
-                    store:destinStoreId,
-                    quantity:quantity
-                }
-            ],
-            {
-                session
-            })
-        }
+        },
+        {
+            $inc:{
+                quantity
+            }
+        },
+        {
+            upsert:true,
+            new:true,
+            session,
+            setDefaultsOnInsert:true
+        })
+        
 
         await session.commitTransaction();
 
