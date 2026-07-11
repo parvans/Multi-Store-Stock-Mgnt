@@ -6,5 +6,6 @@ export const ENV = {
     NODE_ENV: process.env.NODE_ENV,
     // CLIENT_URL: process.env.CLIENT_URL,
     JWT_SECRET: process.env.JWT_SECRET,
+    JWT_EXPIRATION: process.env.JWT_EXPIRATION,
     
 }
