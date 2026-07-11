@@ -1,10 +1,9 @@
 import express from 'express';
 import app from './app.js';
 import connectDB from './config/db.js';
-import dotenv from 'dotenv';
-dotenv.config();
+import { ENV } from './config/env.js';
 
-const PORT = process.env.PORT || 3001;
+const PORT = ENV.PORT || 3001;
 
 const  startServer = async()=>{
     try {
