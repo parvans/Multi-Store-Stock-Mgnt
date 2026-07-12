@@ -176,7 +176,7 @@ export const transferStoreToStoreService = async({
     try {
         session.startTransaction();
         // removing stocks from source store only if quantity >= requested quantity
-        console.log("removing product quantity from source store");
+        //console.log("removing product quantity from source store");
         
         const sourceStock = await Stock.findOneAndUpdate({
             product:productId,
@@ -220,7 +220,7 @@ export const transferStoreToStoreService = async({
         //     })
         // }
 
-        console.log("adding product quatity in destination store");
+        //console.log("adding product quatity in destination store");
         
         await Stock.findOneAndUpdate({
             product:productId,
