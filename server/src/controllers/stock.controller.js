@@ -1,4 +1,4 @@
-import { adjustorCreateStockService, getStocksService } from "../services/stock.service.js";
+import { adjustorCreateStockService, getStocksService, transferStoreToStoreService } from "../services/stock.service.js";
 
 export const adjustorCreateStock = async(req, res, next)=>{
     try {
