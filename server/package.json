@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed": "node src/scripts/seed.js",
+    "swagger":"node src/scripts/exportSwagger.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

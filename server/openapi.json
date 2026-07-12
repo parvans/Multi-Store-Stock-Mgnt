@@ -1,0 +1,377 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Multi Store Stock Management API",
+    "version": "1.0.0",
+    "description": "API documentation for the Multi Store Stock Management"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api",
+      "description": "Local Development"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Invalid credentials"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/stores": {
+      "post": {
+        "summary": "Create Stores",
+        "tags": [
+          "Stores"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "address"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "MYG Digital"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "Mavoor Road, Kozhikode"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Store create successfully"
+          },
+          "400": {
+            "description": "Name and Address are required"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get All Stores",
+        "tags": [
+          "Stores"
+        ],
+        "responses": {
+          "200": {
+            "description": "Store List"
+          }
+        }
+      }
+    },
+    "/stocks/adjustorcreate": {
+      "post": {
+        "summary": "Adjust Stock quantity, Create new stock if stock is not exist.",
+        "tags": [
+          "Stocks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "productId",
+                  "storeId",
+                  "quantity"
+                ],
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "example": "6a534565d34a8e55df464a83"
+                  },
+                  "storeId": {
+                    "type": "string",
+                    "example": "6a534565d34a8e55df464a8a"
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "example": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stock adjustment completed successfully"
+          },
+          "400": {
+            "description": "Product and Store are required"
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      }
+    },
+    "/stocks/transferstoretostore": {
+      "post": {
+        "summary": "Transfer stock between stores and updated per-store levels.",
+        "tags": [
+          "Stocks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "productId",
+                  "sourceStoreId",
+                  "destinStoreId",
+                  "quantity"
+                ],
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "example": "6a534565d34a8e55df464a83"
+                  },
+                  "sourceStoreId": {
+                    "type": "string",
+                    "example": "6a534565d34a8e55df464a83"
+                  },
+                  "destinStoreId": {
+                    "type": "string",
+                    "example": "6a534565d34a8e55df464a83"
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "example": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stock transfered successfully"
+          },
+          "400": {
+            "description": "All fields required"
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      }
+    },
+    "/stocks": {
+      "get": {
+        "summary": "Get All Stocks",
+        "tags": [
+          "Stocks"
+        ],
+        "responses": {
+          "200": {
+            "description": "Stock List"
+          }
+        }
+      }
+    },
+    "/products": {
+      "post": {
+        "summary": "Create Product",
+        "tags": [
+          "Products"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "sku"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Macbook Pro M4"
+                  },
+                  "sku": {
+                    "type": "string",
+                    "example": "MBP-M4"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created successfully"
+          },
+          "400": {
+            "description": "Name and SKU are required"
+          },
+          "409": {
+            "description": "Product already exist with the same SKU"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get All Products",
+        "tags": [
+          "Products"
+        ],
+        "responses": {
+          "200": {
+            "description": "Product List"
+          }
+        }
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Arun Kumar"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "arunkumar@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Arun@123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully"
+          },
+          "400": {
+            "description": {
+              "Possible errors": [
+                "Password must be at least 6 characters",
+                "Invalid email format"
+              ]
+            }
+          },
+          "409": {
+            "description": "Email Already Exists"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login User",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "arunkumar@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Arun@123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User Login successfully"
+          },
+          "401": {
+            "description": "Invalid email or password"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Stores",
+      "description": "Store Management"
+    },
+    {
+      "name": "Stocks",
+      "description": "Stock Adjustment, Store to Store Transfer and List"
+    },
+    {
+      "name": "Products",
+      "description": "Product Management"
+    },
+    {
+      "name": "Authentication",
+      "description": "User Authentication APIs"
+    }
+  ]
+}
