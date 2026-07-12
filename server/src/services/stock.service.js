@@ -21,15 +21,18 @@ export const adjustorCreateStockService = async({
         throw error;
     }
 
-    const product = await Product.findById(productId);
+    const [product, store] = await Promise.all([
+        Product.findById(productId),
+        Store.findById(storeId),
+
+    ])
     if(!product){
-         const error = new Error("Product not found");
+        const error = new Error("Product not found");
         error.statusCode = 404;
         throw error;
     }
-    const store = await Store.findById(storeId);
     if(!store){
-         const error = new Error("Store not found");
+        const error = new Error("Store not found");
         error.statusCode = 404;
         throw error;
     }
@@ -40,6 +43,8 @@ export const adjustorCreateStockService = async({
     })
 
     if(!stock){ // if no stock , then create
+        //console.log("----This is adjustment if there is no stock with given product and store ids----");
+    
         if(quantity<0){
             const error = new Error("Cannot reduce stock that does not exist");
             error.statusCode = 400;
@@ -56,6 +61,7 @@ export const adjustorCreateStockService = async({
     }
 
     if(quantity<0){
+        //console.log("----This is decrement adjustment ----");
         stock = await Stock.findOneAndUpdate({
             product:productId,
             store:storeId,
@@ -80,6 +86,8 @@ export const adjustorCreateStockService = async({
     }
 
     //normal
+    //console.log("----This is normal adjustment----");
+    
     stock = await Stock.findOneAndUpdate({
         product:productId,
         store:storeId,
@@ -168,6 +176,8 @@ export const transferStoreToStoreService = async({
     try {
         session.startTransaction();
         // removing stocks from source store only if quantity >= requested quantity
+        console.log("removing product quantity from source store");
+        
         const sourceStock = await Stock.findOneAndUpdate({
             product:productId,
             store:sourceStoreId,
@@ -210,6 +220,8 @@ export const transferStoreToStoreService = async({
         //     })
         // }
 
+        console.log("adding product quatity in destination store");
+        
         await Stock.findOneAndUpdate({
             product:productId,
             store:destinStoreId

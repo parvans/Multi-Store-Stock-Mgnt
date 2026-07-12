@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "seed": "node src/scripts/seed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,7 +20,9 @@
     "express": "^5.2.1",
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.7.4"
+    "mongoose": "^9.7.4",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
