@@ -5,13 +5,21 @@ import Dashboard from './pages/Dashboard'
 import Products from './pages/Products'
 import Stores from './pages/Stores'
 import Stocks from './pages/Stocks'
+import ProtectedRoute from './components/layout/ProtectedRoute'
+import DashboardLayout from './layouts/DashboardLayout'
 
 function App() {
 
   return (
     <Routes>
       <Route path="/login" element={<Login/>} />
-      <Route>
+      <Route
+      element={
+        <ProtectedRoute>
+          <DashboardLayout/>
+        </ProtectedRoute>
+      }
+      >
         <Route index element={<Dashboard/>} />
         <Route path='products' element={<Products/>} />
         <Route path='stores' element={<Stores/>} />
