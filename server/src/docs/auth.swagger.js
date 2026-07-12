@@ -40,10 +40,14 @@
  *
  *     responses:
  *       201:
- *         description: User Registered Successfully
- *
+ *         description: User created successfully
  *       409:
  *         description: Email Already Exists
+ *       400:
+ *         description: 
+ *           Possible errors: 
+ *           - Password must be at least 6 characters
+ *           - Invalid email format
  */
 
 /**
@@ -76,8 +80,8 @@
  *
  *     responses:
  *       200:
- *         description: Login Successful
+ *         description: User Login successfully
  *
  *       401:
- *         description: Invalid Credentials
+ *         description: Invalid email or password
  */

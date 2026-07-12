@@ -30,7 +30,7 @@ export const login = async(req, res, next)=>{
 
         res.status(201).json({
             success:true,
-            message:"User created successfully",
+            message:"User Login successfully",
             token,
             user:{
                 id:user._id,
