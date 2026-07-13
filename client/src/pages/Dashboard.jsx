@@ -53,7 +53,7 @@ export default function Dashboard() {
   console.log(dashboard.lowStocks);
   
   return (
-    <div className="space-y-6">
+    <>
       <div className="grid gap-3 md:grid-cols-3">
         <Card onClick={()=>navigate('/products')} className='cursor-pointer'>
           <CardHeader className='flex flex-row items-center justify-between pb-2'>
@@ -122,6 +122,6 @@ export default function Dashboard() {
           </Table>
         </CardContent>
       </Card>
-    </div>
+    </>
   )
 }

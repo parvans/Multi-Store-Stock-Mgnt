@@ -10,7 +10,9 @@ export default function DashboardLayout() {
       <SidebarInset>
         <Navbar/>
         <main className="flex-1 p-6">
+          <div className="space-y-6">
             <Outlet/> 
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>
