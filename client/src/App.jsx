@@ -6,7 +6,7 @@ function App() {
 
   return (
     <>
-      <Toaster richColors postion={"top-right"} />
+      <Toaster richColors position={"top-center"} />
       <AppRoutes/>
     </>
   )
