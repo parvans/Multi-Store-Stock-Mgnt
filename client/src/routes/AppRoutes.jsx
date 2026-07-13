@@ -1,4 +1,5 @@
 import ProtectedRoute from '@/components/layout/ProtectedRoute'
+import PublicRoute from '@/components/layout/PublicRoute'
 import DashboardLayout from '@/layouts/DashboardLayout'
 import Dashboard from '@/pages/Dashboard'
 import Login from '@/pages/Login'
@@ -11,7 +12,14 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/login" element={<Login/>} />
+      <Route 
+      path="/login" 
+      element={
+        <PublicRoute>
+          <Login/>
+        </PublicRoute>
+      } 
+      />
       <Route
       element={
         <ProtectedRoute>

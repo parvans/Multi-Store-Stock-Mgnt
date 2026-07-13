@@ -1,17 +1,18 @@
 import Navbar from "@/components/layout/Navbar";
 import SideBar from "@/components/layout/SideBar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Outlet } from "react-router-dom";
 
 export default function DashboardLayout() {
   return (
-    <div>
+    <SidebarProvider>
       <SideBar/>
-      <div>
+      <SidebarInset>
         <Navbar/>
-        <main>
-          <Outlet/>
+        <main className="flex-1 p-6">
+            <Outlet/> 
         </main>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
