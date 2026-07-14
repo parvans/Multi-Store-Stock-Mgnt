@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Package, Plus } from "lucide-react";
+import { Plus, Store } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -71,7 +71,7 @@ export default function Stores() {
     <div>
       <div className="flex items-center justify-between">
         <h1 className="flex items-center gap-3 text-2xl font-bold">
-          <Package className="w-6 h-6"/>
+          <Store className="w-6 h-6"/>
           Stores
         </h1>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
