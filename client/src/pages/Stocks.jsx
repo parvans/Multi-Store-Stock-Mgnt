@@ -1,13 +1,15 @@
 import { getProducts } from "@/api/productApi";
-import { getStocks } from "@/api/stockApi";
+import { changeorCreateStock, getStocks, transferStocks } from "@/api/stockApi";
 import { getStores } from "@/api/storeApi";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import { Boxes, Pencil } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ArrowRightLeft, Boxes, Pencil } from "lucide-react";
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner";
 
@@ -20,12 +22,14 @@ export default function Stocks() {
   const [loading, setLoading] = useState(false);
 
   const [adjustStockOpen,setAdjustStockopen] = useState(false);
+  const [adjustLoading, setadjustLoading] = useState(false);
   const [adjustFormData, setAdjustFormData] = useState({
     productId:"",
     storeId:"",
     quantity:0
   })
   const [transferStockOpen,setTransferStockopen] = useState(false);
+  const [transLoading, setTransLoading] = useState(false);
   const [transferFormData, setTransferFormData] = useState({
     productId:"",
     sourceStoreId:"",
@@ -66,6 +70,51 @@ export default function Stocks() {
       return ()=> clearTimeout(timer)
     },[threshold])
 
+    const handleChangeStockQty = async(e)=>{
+      e.preventDefault()
+      try {
+        setadjustLoading(true)
+        const res = await changeorCreateStock(adjustFormData);
+        toast.success(res?.data?.message ||"Adjustment Successfully");
+        setAdjustFormData({
+          productId:"",
+          storeId:"",
+          quantity:0
+        });
+        setAdjustStockopen(false)
+        await fetchStocks();
+      } catch (error) {
+        console.error(error);
+        toast.error("Adjustment Failed")
+      }finally{
+        setadjustLoading(false)
+      }
+    }
+    const handleTransferStockQty = async(e)=>{
+      e.preventDefault()
+      try {
+        setTransLoading(true)
+        const res = await transferStocks(transferFormData);
+        console.log(res);
+        
+        toast.success(res?.data?.message ||"Transfer Successfully")
+        setTransferFormData({
+          productId:"",
+          sourceStoreId:"",
+          destinStoreId:"",
+          quantity:0
+        })
+        setTransferStockopen(false)
+        await fetchStocks();
+      } catch (error) {
+        console.error(error);
+        toast.error(error?.response?.data?.message ||"Transfer Failed")
+      }finally{
+        setTransLoading(false)
+      }
+    }
+    
+
     // console.log(products,"Products");
     // console.log(stores,"Stores");
     // console.log(stocks,"Stocks");
@@ -99,10 +148,11 @@ export default function Stocks() {
                   Change Stock Qty
                 </DialogTitle>
               </DialogHeader>
-              <form className="space-y-3" >
+              <form className="space-y-3" onSubmit={handleChangeStockQty}>
                 <div className="space-y-2">
                   <Label>Product</Label>
                   <Select
+                  disabled={adjustLoading}
                   className="w-full" 
                   value={adjustFormData.productId}
                   onValueChange={(value)=>{
@@ -133,6 +183,7 @@ export default function Stocks() {
                 <div className="space-y-2">
                   <Label>Store</Label>
                   <Select
+                  disabled={adjustLoading}
                   className="w-full" 
                   value={adjustFormData.storeId}
                   onValueChange={(value)=>{
@@ -173,10 +224,11 @@ export default function Stocks() {
                     })
                   }}
                   required
+                  disabled={adjustLoading}
                   />
                 </div>
-                <Button disabled={loading} type='submit' className="w-full">
-                  {loading ? <Spinner/> :"Change"}
+                <Button disabled={adjustLoading} type='submit' className="w-full">
+                  {adjustLoading ? <Spinner/> :"Change"}
                 </Button>
               </form>
             </DialogContent>
@@ -185,7 +237,7 @@ export default function Stocks() {
           <Dialog open={transferStockOpen} onOpenChange={setTransferStockopen}>
             <DialogTrigger>
               <Button>
-                <Pencil/>
+                <ArrowRightLeft/>
                 Transfer
               </Button>
             </DialogTrigger>
@@ -195,10 +247,11 @@ export default function Stocks() {
                   Transfer Product Stocks
                 </DialogTitle>
               </DialogHeader>
-              <form className="space-y-3" >
+              <form className="space-y-3" onSubmit={handleTransferStockQty}>
                 <div className="space-y-2">
                   <Label>Product</Label>
                   <Select 
+                  disabled={transLoading}
                   value={transferFormData.productId}
                   onValueChange={(value)=>{
                     setTransferFormData((prev)=>({
@@ -227,7 +280,8 @@ export default function Stocks() {
                 </div>
                 <div className="space-y-2">
                   <Label>Source Store</Label>
-                  <Select 
+                  <Select
+                  disabled={transLoading} 
                   value={transferFormData.sourceStoreId}
                   onValueChange={(value)=>{
                     setTransferFormData((prev)=>({
@@ -255,7 +309,8 @@ export default function Stocks() {
                 </div>
                 <div className="space-y-2">
                   <Label>Destination Store</Label>
-                  <Select 
+                  <Select
+                  ddisabled={transLoading}
                   value={transferFormData.destinStoreId}
                   onValueChange={(value)=>{
                     setTransferFormData((prev)=>({
@@ -281,14 +336,80 @@ export default function Stocks() {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button disabled={loading} type='submit' className="w-full">
-                  {loading ? <Spinner/> :"Adjust"}
+                <div className="space-y-2">
+                  <Label>Quantity</Label>
+                  <Input
+                  type="number"
+                  name="quantity"
+                  placeholder="Quantity"
+                  value={transferFormData.quantity}
+                  onChange={(e)=>{
+                    setTransferFormData({
+                      ...transferFormData,
+                      quantity:e.target.value
+                    })
+                  }}
+                  required
+                  disabled={transLoading}
+                  />
+                </div>
+                <Button disabled={transLoading} type='submit' className="w-full">
+                  {transLoading ? <Spinner/> :"Transfer"}
                 </Button>
               </form>
             </DialogContent>
           </Dialog> 
         </div>
       </div>
+      <Card className="mt-6 w-sm">
+        <CardContent>
+          <div className="max-w-xs space-y-2">
+            <Label>Low Stock Filter</Label>
+            <Input
+            type='number'
+            min={0}
+            placeholder="Quantity"
+            value={threshold}
+            onChange={(e)=>setThreshold(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Show only stocks with less quantity
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {
+        loading ? (
+          <Spinner className="mt-6"/>
+        ):(
+          <Card className="mt-6">
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Store</TableHead>
+                    <TableHead>Qty</TableHead>
+                  </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                  {
+                    stocks?.map((stock)=>(
+                      <TableRow key={stock._id}>
+                        <TableCell>{stock?.product?.name}</TableCell>
+                        <TableCell>{stock?.store?.name}</TableCell>
+                        <TableCell>{stock?.quantity}</TableCell>
+                      </TableRow>
+                    ))
+                  }
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )
+      }
     </div>
   )
 }
