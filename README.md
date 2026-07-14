@@ -90,6 +90,8 @@ MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
 
 NODE_ENV=development
+
+JWT_EXPIRATION = 7d
 ```
 
 Start the backend.
