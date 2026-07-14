@@ -116,12 +116,6 @@ Install dependencies.
 npm install
 ```
 
-Create a `.env` file.
-
-```
-VITE_API_URL=http://localhost:5000/api/v1
-```
-
 Run the frontend.
 
 ```bash
