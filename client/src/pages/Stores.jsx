@@ -6,11 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import useAuth from "@/hooks/useAuth";
 import { Plus, Store } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Stores() {
+  const {user} = useAuth()
+  const isAdmin = user?.role === "admin";
   const [stores,setStores] = useState([]);
   const [listLoading, setListLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -65,7 +68,7 @@ export default function Stores() {
     listStoreFetch();
   },[])
 
-  console.log(stores);
+  //console.log(stores);
   
   return (
     <div>
@@ -74,7 +77,7 @@ export default function Stores() {
           <Store className="w-6 h-6"/>
           Stores
         </h1>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        { isAdmin &&(<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger>
             <Button>
               <Plus/>
@@ -123,7 +126,7 @@ export default function Stores() {
               </Button>
             </form>
           </DialogContent>
-        </Dialog>        
+        </Dialog> )}       
       </div>
       {
         listLoading ? (

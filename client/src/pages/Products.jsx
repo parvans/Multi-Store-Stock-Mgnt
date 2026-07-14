@@ -6,11 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import useAuth from "@/hooks/useAuth";
 import { Package, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Products() {
+  const {user} = useAuth()
+  const isAdmin = user?.role === "admin";
   const [products,setProducts] = useState([]);
   const [listLoading, setListLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -41,7 +44,7 @@ export default function Products() {
     try {
       setLoading(true)
       const res = await newProduct(productData);
-      console.log(res);
+      //console.log(res);
       
       if(res.data.success){
         toast.success(res?.data?.message || "Product Created Successfully");
@@ -65,7 +68,7 @@ export default function Products() {
     listProductFetch();
   },[])
 
-  console.log(products);
+  //console.log(products);
   
   return (
     <div>
@@ -74,7 +77,7 @@ export default function Products() {
           <Package className="w-6 h-6"/>
           Products
         </h1>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        {isAdmin && (<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger>
             <Button>
               <Plus/>
@@ -123,7 +126,7 @@ export default function Products() {
               </Button>
             </form>
           </DialogContent>
-        </Dialog>        
+        </Dialog> )}       
       </div>
       {
         listLoading ? (

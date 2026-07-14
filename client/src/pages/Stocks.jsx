@@ -9,11 +9,14 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import useAuth from "@/hooks/useAuth";
 import { ArrowRightLeft, Boxes, Pencil } from "lucide-react";
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner";
 
 export default function Stocks() {
+  const {user} = useAuth();
+  const isAdmin = user?.role === "admin";
   const [products, setProducts] = useState([]);
   const [stores, setStores] = useState([]);
   const [stocks, setStocks] = useState([]);
@@ -135,230 +138,235 @@ export default function Stocks() {
 
         <div className="flex-row gap-4">
 
-          <Dialog open={adjustStockOpen} onOpenChange={setAdjustStockopen}>
-            <DialogTrigger>
-              <Button>
-                <Pencil/>
-                Stock Qty
-              </Button>
-            </DialogTrigger>
-            <DialogContent >
-              <DialogHeader>
-                <DialogTitle>
-                  Change Stock Qty
-                </DialogTitle>
-              </DialogHeader>
-              <form className="space-y-3" onSubmit={handleChangeStockQty}>
-                <div className="space-y-2">
-                  <Label>Product</Label>
-                  <Select
-                  disabled={adjustLoading}
-                  className="w-full" 
-                  value={adjustFormData.productId}
-                  onValueChange={(value)=>{
-                    setAdjustFormData((prev)=>({
-                      ...prev,
-                      productId:value
-                    }))
-                  }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue>
-                        {products.find((p) => p._id === adjustFormData.productId)?.name ||
-                        "Select Product"}
-                      </SelectValue>
-                    </SelectTrigger>
+          { isAdmin && (
+              <>
+              <Dialog open={adjustStockOpen} onOpenChange={setAdjustStockopen}>
+                <DialogTrigger>
+                  <Button>
+                    <Pencil/>
+                    Stock Qty
+                  </Button>
+                </DialogTrigger>
+                <DialogContent >
+                  <DialogHeader>
+                    <DialogTitle>
+                      Change Stock Qty
+                    </DialogTitle>
+                  </DialogHeader>
+                  <form className="space-y-3" onSubmit={handleChangeStockQty}>
+                    <div className="space-y-2">
+                      <Label>Product</Label>
+                      <Select
+                      disabled={adjustLoading}
+                      className="w-full" 
+                      value={adjustFormData.productId}
+                      onValueChange={(value)=>{
+                        setAdjustFormData((prev)=>({
+                          ...prev,
+                          productId:value
+                        }))
+                      }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue>
+                            {products.find((p) => p._id === adjustFormData.productId)?.name ||
+                            "Select Product"}
+                          </SelectValue>
+                        </SelectTrigger>
 
-                    <SelectContent>
-                      {
-                        products.map((product)=>(
-                          <SelectItem key={product._id} value={product._id}>
-                            {product.name}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Store</Label>
-                  <Select
-                  disabled={adjustLoading}
-                  className="w-full" 
-                  value={adjustFormData.storeId}
-                  onValueChange={(value)=>{
-                    setAdjustFormData((prev)=>({
-                      ...prev,
-                      storeId:value
-                    }))
-                  }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue>
-                        {stores.find((s) => s._id === adjustFormData.storeId)?.name ||
-                        "Select Store"}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {
-                        stores.map((store)=>(
-                          <SelectItem key={store._id} value={store._id}>
-                            {store.name}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Quantity</Label>
-                  <Input
-                  type="number"
-                  name="quantity"
-                  placeholder="Quantity"
-                  value={adjustFormData.quantity}
-                  onChange={(e)=>{
-                    setAdjustFormData({
-                      ...adjustFormData,
-                      quantity:e.target.value
-                    })
-                  }}
-                  required
-                  disabled={adjustLoading}
-                  />
-                </div>
-                <Button disabled={adjustLoading} type='submit' className="w-full">
-                  {adjustLoading ? <Spinner/> :"Change"}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog> 
+                        <SelectContent>
+                          {
+                            products.map((product)=>(
+                              <SelectItem key={product._id} value={product._id}>
+                                {product.name}
+                              </SelectItem>
+                            ))
+                          }
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Store</Label>
+                      <Select
+                      disabled={adjustLoading}
+                      className="w-full" 
+                      value={adjustFormData.storeId}
+                      onValueChange={(value)=>{
+                        setAdjustFormData((prev)=>({
+                          ...prev,
+                          storeId:value
+                        }))
+                      }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue>
+                            {stores.find((s) => s._id === adjustFormData.storeId)?.name ||
+                            "Select Store"}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {
+                            stores.map((store)=>(
+                              <SelectItem key={store._id} value={store._id}>
+                                {store.name}
+                              </SelectItem>
+                            ))
+                          }
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Quantity</Label>
+                      <Input
+                      type="number"
+                      name="quantity"
+                      placeholder="Quantity"
+                      value={adjustFormData.quantity}
+                      onChange={(e)=>{
+                        setAdjustFormData({
+                          ...adjustFormData,
+                          quantity:e.target.value
+                        })
+                      }}
+                      required
+                      disabled={adjustLoading}
+                      />
+                    </div>
+                    <Button disabled={adjustLoading} type='submit' className="w-full">
+                      {adjustLoading ? <Spinner/> :"Change"}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog> 
 
-          <Dialog open={transferStockOpen} onOpenChange={setTransferStockopen}>
-            <DialogTrigger>
-              <Button>
-                <ArrowRightLeft/>
-                Transfer
-              </Button>
-            </DialogTrigger>
-            <DialogContent >
-              <DialogHeader>
-                <DialogTitle>
-                  Transfer Product Stocks
-                </DialogTitle>
-              </DialogHeader>
-              <form className="space-y-3" onSubmit={handleTransferStockQty}>
-                <div className="space-y-2">
-                  <Label>Product</Label>
-                  <Select 
-                  disabled={transLoading}
-                  value={transferFormData.productId}
-                  onValueChange={(value)=>{
-                    setTransferFormData((prev)=>({
-                      ...prev,
-                      productId:value
-                    }))
-                  }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue>
-                        {products.find((p) => p._id === transferFormData.productId)?.name ||
-                        "Select Product"}
-                      </SelectValue>
-                    </SelectTrigger>
+              <Dialog open={transferStockOpen} onOpenChange={setTransferStockopen}>
+                <DialogTrigger>
+                  <Button>
+                    <ArrowRightLeft/>
+                    Transfer
+                  </Button>
+                </DialogTrigger>
+                <DialogContent >
+                  <DialogHeader>
+                    <DialogTitle>
+                      Transfer Product Stocks
+                    </DialogTitle>
+                  </DialogHeader>
+                  <form className="space-y-3" onSubmit={handleTransferStockQty}>
+                    <div className="space-y-2">
+                      <Label>Product</Label>
+                      <Select 
+                      disabled={transLoading}
+                      value={transferFormData.productId}
+                      onValueChange={(value)=>{
+                        setTransferFormData((prev)=>({
+                          ...prev,
+                          productId:value
+                        }))
+                      }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue>
+                            {products.find((p) => p._id === transferFormData.productId)?.name ||
+                            "Select Product"}
+                          </SelectValue>
+                        </SelectTrigger>
 
-                    <SelectContent>
-                      {
-                        products.map((product)=>(
-                          <SelectItem key={product._id} value={product._id}>
-                            {product.name}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Source Store</Label>
-                  <Select
-                  disabled={transLoading} 
-                  value={transferFormData.sourceStoreId}
-                  onValueChange={(value)=>{
-                    setTransferFormData((prev)=>({
-                      ...prev,
-                      sourceStoreId:value
-                    }))
-                  }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue>
-                        {stores.find((p) => p._id === transferFormData.sourceStoreId)?.name ||
-                        "Select Store"}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {
-                        stores.map((store)=>(
-                          <SelectItem key={store._id} value={store._id}>
-                            {store.name}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Destination Store</Label>
-                  <Select
-                  ddisabled={transLoading}
-                  value={transferFormData.destinStoreId}
-                  onValueChange={(value)=>{
-                    setTransferFormData((prev)=>({
-                      ...prev,
-                      destinStoreId:value
-                    }))
-                  }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue>
-                        {stores.find((p) => p._id === transferFormData.destinStoreId)?.name ||
-                        "Select Store"}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {
-                        stores.map((store)=>(
-                          <SelectItem key={store._id} value={store._id}>
-                            {store.name}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Quantity</Label>
-                  <Input
-                  type="number"
-                  name="quantity"
-                  placeholder="Quantity"
-                  value={transferFormData.quantity}
-                  onChange={(e)=>{
-                    setTransferFormData({
-                      ...transferFormData,
-                      quantity:e.target.value
-                    })
-                  }}
-                  required
-                  disabled={transLoading}
-                  />
-                </div>
-                <Button disabled={transLoading} type='submit' className="w-full">
-                  {transLoading ? <Spinner/> :"Transfer"}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog> 
+                        <SelectContent>
+                          {
+                            products.map((product)=>(
+                              <SelectItem key={product._id} value={product._id}>
+                                {product.name}
+                              </SelectItem>
+                            ))
+                          }
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Source Store</Label>
+                      <Select
+                      disabled={transLoading} 
+                      value={transferFormData.sourceStoreId}
+                      onValueChange={(value)=>{
+                        setTransferFormData((prev)=>({
+                          ...prev,
+                          sourceStoreId:value
+                        }))
+                      }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue>
+                            {stores.find((p) => p._id === transferFormData.sourceStoreId)?.name ||
+                            "Select Store"}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {
+                            stores.map((store)=>(
+                              <SelectItem key={store._id} value={store._id}>
+                                {store.name}
+                              </SelectItem>
+                            ))
+                          }
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Destination Store</Label>
+                      <Select
+                      ddisabled={transLoading}
+                      value={transferFormData.destinStoreId}
+                      onValueChange={(value)=>{
+                        setTransferFormData((prev)=>({
+                          ...prev,
+                          destinStoreId:value
+                        }))
+                      }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue>
+                            {stores.find((p) => p._id === transferFormData.destinStoreId)?.name ||
+                            "Select Store"}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {
+                            stores.map((store)=>(
+                              <SelectItem key={store._id} value={store._id}>
+                                {store.name}
+                              </SelectItem>
+                            ))
+                          }
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Quantity</Label>
+                      <Input
+                      type="number"
+                      name="quantity"
+                      placeholder="Quantity"
+                      value={transferFormData.quantity}
+                      onChange={(e)=>{
+                        setTransferFormData({
+                          ...transferFormData,
+                          quantity:e.target.value
+                        })
+                      }}
+                      required
+                      disabled={transLoading}
+                      />
+                    </div>
+                    <Button disabled={transLoading} type='submit' className="w-full">
+                      {transLoading ? <Spinner/> :"Transfer"}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog> 
+              </>
+            )
+          }
         </div>
       </div>
       <Card className="mt-6 w-sm">
