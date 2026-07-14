@@ -100,7 +100,7 @@ export default function Products() {
                     name:e.target.value
                   })
                 }}
-                //required
+                required
                 />
               </div>
               <div className="space-y-2">
@@ -115,7 +115,7 @@ export default function Products() {
                     sku:e.target.value
                   })
                 }}
-                //required
+                required
                 />
               </div>
               <Button disabled={loading} type='submit' className="w-full">
