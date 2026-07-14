@@ -1,6 +1,6 @@
-import { getProduct } from "@/api/productApi";
+import { getProducts } from "@/api/productApi";
 import { getStocks } from "@/api/stockApi";
-import { getStore } from "@/api/storeApi";
+import { getStores } from "@/api/storeApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -23,8 +23,8 @@ export default function Dashboard() {
     try {
       setLoading(true)
       const [productRes, storeRes, stockRes, lowStocksRes] = await Promise.all([
-        getProduct(),
-        getStore(),
+        getProducts(),
+        getStores(),
         getStocks(),
         getStocks(10)
       ]);
